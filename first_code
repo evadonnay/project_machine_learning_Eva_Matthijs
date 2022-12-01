@@ -1,4 +1,4 @@
-#eerste poging (misclassification rate = 11,7%
+#first try (misclassification rate = 11,7%
 gene_mach = machine(MultinomialClassifier(penalty = :none),
                      select(df_training[1:4000,:], Not(:labels)),
 	                 df_training.labels[1:4000]) |> fit!
@@ -6,7 +6,7 @@ gene_pred_no_opt = predict_mode(gene_mach, select(df_training[4001:5000, :],Not(
 mean(gene_pred_no_opt .!= df_training.labels[4001:5000])
 confusion_matrix(gene_pred_no_opt,df_training.labels[4001:5000])
 
-#2de poging (misclassificatie rate = 13,2%)
+#try 2 (misclassificatie rate = 13,2%)
 gene_mach_2 = machine(MultinomialClassifier(penalty = :none),
                      select(df_training[1:4500,:], Not(:labels)),
 	                 df_training.labels[1:4500]) |> fit!
@@ -14,7 +14,7 @@ gene_pred_no_opt_2 = predict_mode(gene_mach_2, select(df_training[4501:5000, :],
 mean(gene_pred_no_opt_2 .!= df_training.labels[4501:5000])
 confusion_matrix(gene_pred_no_opt_2,df_training.labels[4501:5000])
 
-#poging 3 regularisatie (misclassificatie rate = 10,9%)
+#try 3 regularisatie (misclassificatie rate = 10,9%)
 gene_fit_reg = machine(MultinomialClassifier(penalty = :l1, lambda = 1e-5),
                         select(df_training[1:4000,:], Not(:labels)),
                         df_training.labels[1:4000])|> fit!
