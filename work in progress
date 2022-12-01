@@ -1,0 +1,8 @@
+begin 
+	Random.seed!(1234);
+	mach_lda=machine(MultinomialClassifier(penalty = :l1, lambda = 1e-5), select(df_training[1:4000,:], Not(:labels)),df_training.labels[1:4000])
+	eval_lda=evaluate!(mach_lda, resampling=CV(nfolds=10,shuffle=true,rng=42), measures=[accuracy,confusion_matrix],operation=predict_mode)
+	eval_lda.measurement[2]
+	ŷ = predict_mode(mach_lda, select(df_training[4001:5000,:], Not(:labels)))
+	test_results["acc_lda"] = accuracy(ŷ, df_training.labels[4001:5000])
+end
