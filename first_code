@@ -33,6 +33,28 @@ mach = machine(MultinomialClassifier(penalty = :l1, lambda = ...),
                         df_training.labels[1:4000])|> fit!
 
 LAMBDA = 10-2
+
+LAMBDA 1e-3: validation [1:1000], [1001:5000] test
+negative_loglikelihood
+223.143
+misclassification_rate
+0.087
+accuracy
+0.913
+auc
+0.965876
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │     348     │     37      │      1      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     39      │     262     │      4      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      1      │      5      │     303     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
 TRAINING:
 negative_loglikelihood
 1311.93
