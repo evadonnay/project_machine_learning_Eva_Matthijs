@@ -27,6 +27,7 @@ function losses(machine, input, response)
     (negative_loglikelihood = sum(log_loss(predict(machine, input), response)),
      misclassification_rate = mean(predict_mode(machine, input) .!= response),
      accuracy = accuracy(predict_mode(machine, input), response),
-     auc = auc(predict(machine, input), response)
+     auc = auc(predict(machine, input), response),
+	 confusion_matrix = confusion_matrix(predict_mode(machine, input), response)
 	)
 end;
