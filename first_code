@@ -23,6 +23,8 @@ mean(gene_fit_reg_pred .!= df_training.labels[4001:5000])
 confusion_matrix(gene_fit_reg_pred,df_training.labels[4001:5000])
 
 
+EVALUATION OF THE MACHINE:
+
 function losses(machine, input, response)
     (negative_loglikelihood = sum(log_loss(predict(machine, input), response)),
      misclassification_rate = mean(predict_mode(machine, input) .!= response),
