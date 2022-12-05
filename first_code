@@ -36,6 +36,10 @@ mach = machine(MultinomialClassifier(penalty = :l1, lambda = ...),
 
 LAMBDA 1e-3:
 
+TRAINING
+
+
+
 VALIDATION
 negative_loglikelihood
 223.143
