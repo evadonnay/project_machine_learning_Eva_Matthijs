@@ -91,3 +91,5 @@ function losses(machine, input, response)
 	 confusion_matrix = confusion_matrix(predict_mode(machine, input), response)
 	)
 end;
+
+artikel: https://machinelearningmastery.com/how-to-handle-big-p-little-n-p-n-in-machine-learning/
