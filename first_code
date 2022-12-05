@@ -23,6 +23,64 @@ mean(gene_fit_reg_pred .!= df_training.labels[4001:5000])
 confusion_matrix(gene_fit_reg_pred,df_training.labels[4001:5000])
 
 
+
+
+
+
+TRYING DIFFERENT VALUES OF LAMBDA FOR MACHINE:
+mach = machine(MultinomialClassifier(penalty = :l1, lambda = ...),
+                        select(df_training[1:4000,:], Not(:labels)),
+                        df_training.labels[1:4000])|> fit!
+
+LAMBDA = 10-2
+TRAINING:
+negative_loglikelihood
+1311.93
+misclassification_rate
+0.0995
+accuracy
+0.9005
+auc
+0.957901
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │    1356     │     207     │      1      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     126     │    1034     │     34      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      1      │     29      │    1212     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
+
+VALIDATION:
+negative_loglikelihood
+360.155
+misclassification_rate
+0.129
+accuracy
+0.871
+auc
+0.932563
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │     321     │     62      │      1      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     47      │     219     │     13      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      1      │      5      │     331     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
+
+
+
+
+
 EVALUATION OF THE MACHINE:
 
 function losses(machine, input, response)
