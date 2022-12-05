@@ -21,3 +21,12 @@ gene_fit_reg = machine(MultinomialClassifier(penalty = :l1, lambda = 1e-5),
 gene_fit_reg_pred = predict_mode(gene_fit_reg, select(df_training[4001:5000, :],Not(:labels)))
 mean(gene_fit_reg_pred .!= df_training.labels[4001:5000])
 confusion_matrix(gene_fit_reg_pred,df_training.labels[4001:5000])
+
+
+function losses(machine, input, response)
+    (negative_loglikelihood = sum(log_loss(predict(machine, input), response)),
+     misclassification_rate = mean(predict_mode(machine, input) .!= response),
+     accuracy = accuracy(predict_mode(machine, input), response),
+     auc = auc(predict(machine, input), response)
+	)
+end;
