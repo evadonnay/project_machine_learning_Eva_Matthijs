@@ -93,3 +93,4 @@ function losses(machine, input, response)
 end;
 
 artikel: https://machinelearningmastery.com/how-to-handle-big-p-little-n-p-n-in-machine-learning/
+article CNN with p>>n: https://towardsdatascience.com/how-to-reduce-training-parameters-in-cnns-while-keeping-accuracy-99-a213034a9777
