@@ -9,26 +9,59 @@ df_training_stand[:,end-3:end] #to chech if labels were correctly added back
 rename!(df_training_stand,:x1 => :labels)
 coerce!(df_training_stand, :labels => Multiclass);
 
-#first try (misclassification rate = 11,7%
-gene_mach = machine(MultinomialClassifier(penalty = :none),
-                     select(df_training[1:4000,:], Not(:labels)),
-	                 df_training.labels[1:4000]) |> fit!
-gene_pred_no_opt = predict_mode(gene_mach, select(df_training[4001:5000, :],Not(:labels)))
-mean(gene_pred_no_opt .!= df_training.labels[4001:5000])
-confusion_matrix(gene_pred_no_opt,df_training.labels[4001:5000])
-
-#try 2 (misclassificatie rate = 13,2%)
-gene_mach_2 = machine(MultinomialClassifier(penalty = :none),
-                     select(df_training[1:4500,:], Not(:labels)),
-	                 df_training.labels[1:4500]) |> fit!
-gene_pred_no_opt_2 = predict_mode(gene_mach_2, select(df_training[4501:5000, :],Not(:labels)))
-mean(gene_pred_no_opt_2 .!= df_training.labels[4501:5000])
-confusion_matrix(gene_pred_no_opt_2,df_training.labels[4501:5000])
-
-#try 3 regularisatie (misclassificatie rate = 10,9%)
-gene_fit_reg = machine(MultinomialClassifier(penalty = :l1, lambda = 1e-5),
-                        select(df_training[1:4000,:], Not(:labels)),
-                        df_training.labels[1:4000])|> fit!
-gene_fit_reg_pred = predict_mode(gene_fit_reg, select(df_training[4001:5000, :],Not(:labels)))
-mean(gene_fit_reg_pred .!= df_training.labels[4001:5000])
-confusion_matrix(gene_fit_reg_pred,df_training.labels[4001:5000])
+we try regularization for lambda= 1e-3 with the standardized and cleaned data (1:4000)-> training, (4001:5000)-> validation
+gene_fit_reg = machine(MultinomialClassifier(penalty = :l1, lambda = 1e-3),
+                        select(df_training_stand[1:4000,:], Not(:labels)),
+                        df_training_stand.labels[1:4000])|> fit!
+			
+function losses(machine, input, response)
+    (negative_loglikelihood = sum(log_loss(predict(machine, input), response)),
+     misclassification_rate = mean(predict_mode(machine, input) .!= response),
+     accuracy = accuracy(predict_mode(machine, input), response),
+     auc = auc(predict(machine, input), response),
+	 confusion_matrix = confusion_matrix(predict_mode(machine, input), response))
+end;
+losses(gene_fit_reg, select(df_training_stand[1:4000,:], Not(:labels)), df_training_stand.labels[1:4000])
+#result train accuracy:
+negative_loglikelihood
+77.3269
+misclassification_rate
+0.0
+accuracy
+1.0
+auc
+1.0
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │    1483     │      0      │      0      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │      0      │    1270     │      0      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      0      │      0      │    1247     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
+losses(gene_fit_reg, select(df_training_stand[4001:5000,:], Not(:labels)), df_training_stand.labels[4001:5000])
+#result validation accuracy:
+negative_loglikelihood
+290.723
+misclassification_rate
+0.103
+accuracy
+0.897
+auc
+0.951294
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │     330     │     48      │      4      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     37      │     231     │      5      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      2      │      7      │     336     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
