@@ -1,3 +1,14 @@
+#first thing we do is datacleaning and standardization (standardization is recommended for regularization)
+df_no_labels= select(df_training[1:5000,:], Not(:labels))
+df_clean_const_no_labels = df_no_labels[:, std.(eachcol(df_no_labels)) .!= 0]
+colum_labels= df_training.labels
+stand_gene_mach= fit!(machine(Standardizer(), df_clean_const_no_labels));
+df_training_stand_no_labels= MLJ.transform(stand_gene_mach,df_clean_const_no_labels)
+df_training_stand= hcat(df_training_stand_no_labels, colum_labels)
+df_training_stand[:,end-3:end] #to chech if labels were correctly added back 
+rename!(df_training_stand,:x1 => :labels)
+coerce!(df_training_stand, :labels => Multiclass);
+
 #first try (misclassification rate = 11,7%
 gene_mach = machine(MultinomialClassifier(penalty = :none),
                      select(df_training[1:4000,:], Not(:labels)),
