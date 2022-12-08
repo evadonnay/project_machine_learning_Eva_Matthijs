@@ -118,4 +118,50 @@ confusion_matrix
 │    eGFP     │      0      │      5      │     334     │
 └─────────────┴─────────────┴─────────────┴─────────────┘
 
+cross validation to find perfect amount of PC's takes to long but we got pretty similar resulats for #PC's= 190 as voor l1 regression BUT with less overtraining (see training accuracy)
+gene_fit_reg = machine(PCA(maxoutdim= 190) |> MultinomialClassifier(penalty = :none),
+                    	select(df_training_stand[1:4000,:], Not(:labels)),
+                        df_training_stand.labels[1:4000])|> fit!
+losses(gene_fit_reg, select(df_training_stand[1:4000,:], Not(:labels)), df_training_stand.labels[1:4000])
+negative_loglikelihood
+772.009
+misclassification_rate
+0.08025
+accuracy
+0.91975
+auc
+0.974035
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │    1322     │     160     │      0      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     161     │    1110     │      0      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      0      │      0      │    1247     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
 
+losses(gene_fit_reg, select(df_training_stand[4001:5000,:], Not(:labels)), df_training_stand.labels[4001:5000])
+negative_loglikelihood
+463.123
+misclassification_rate
+0.107
+accuracy
+0.893
+auc
+0.936941
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │     343     │     69      │      2      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     26      │     210     │      3      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      0      │      7      │     340     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
