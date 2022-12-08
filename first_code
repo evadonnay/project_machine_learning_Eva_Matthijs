@@ -65,3 +65,57 @@ confusion_matrix
 ├─────────────┼─────────────┼─────────────┼─────────────┤
 │    eGFP     │      2      │      7      │     336     │
 └─────────────┴─────────────┴─────────────┴─────────────┘
+
+
+# trying PCA for the first time instead of regularization to avoid overtraining of model: We used 20 PC (output dimension= 20) and noticed immediatly that there is less overtraining 
+now we're going to try CV to determine the right amount of PC's so we don't lose to many explainable variation 
+gene_fit_reg = machine(PCA(maxoutdim= 20) |> MultinomialClassifier(penalty = :none),
+                        #select(df_training_stand[1:4000,:], Not(:labels)),
+                        #df_training_stand.labels[1:4000])|> fit!
+
+losses(gene_fit_reg, select(df_training_stand[1:4000,:], Not(:labels)), df_training_stand.labels[1:4000])
+result: 
+negative_loglikelihood
+1564.04
+misclassification_rate
+0.17925
+accuracy
+0.82075
+auc
+0.894572
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │    1175     │     347     │      1      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     303     │     894     │     32      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      5      │     29      │    1214     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
+
+losses(gene_fit_reg, select(df_training_stand[4001:5000,:], Not(:labels)), df_training_stand.labels[4001:5000])
+negative_loglikelihood
+378.894
+misclassification_rate
+0.181
+accuracy
+0.819
+auc
+0.896878
+confusion_matrix
+              ┌─────────────────────────────────────────┐
+              │              Ground Truth               │
+┌─────────────┼─────────────┬─────────────┬─────────────┤
+│  Predicted  │     CBP     │    KAT5     │    eGFP     │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│     CBP     │     286     │     82      │      3      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    KAT5     │     83      │     199     │      8      │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│    eGFP     │      0      │      5      │     334     │
+└─────────────┴─────────────┴─────────────┴─────────────┘
+
+
