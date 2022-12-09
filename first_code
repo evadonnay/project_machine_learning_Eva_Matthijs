@@ -165,3 +165,63 @@ confusion_matrix
 ├─────────────┼─────────────┼─────────────┼─────────────┤
 │    eGFP     │      0      │      7      │     340     │
 └─────────────┴─────────────┴─────────────┴─────────────┘
+
+
+
+
+
+
+
+
+
+
+
+
+CODE VOOR LABELS IN DATAFRAME AAN TE PASSEN
+for i = 1:5000
+	if df_training_stand.labels[i] == "CBP"
+		df_training_stand.labels[i] = "merge"
+	elseif df_training_stand.labels[i] == "KAT5"
+		df_training_stand.labels[i] = "merge"
+	end
+end
+
+
+CODE VOOR FITTED PARAMETERS IN JUISTE DATAKLASSE TE KRIJGEN
+par = fitted_params(mach)
+
+v = sortperm(hcat(last.(par.coefs)...)[3,:])
+# 3 hier indexeert voor alle parameters voor klasse eGFP (eerste twee zijn nog voor klasses CBP en KAT5, geen idee waarom deze labels nog onthouden zijn, alle parameters hiervoor zijn wel nul)
+w = sortperm(hcat(last.(par.coefs)...)[4,:])
+# 4 hier indexeert voor alle parameters voor klasse merge
+
+first.(par.coefs) # deze bevat alle predictors
+
+
+FOR-LOOP DIE IK EERST GESCHREVEN HAD
+begin
+	pred_end = length(v)
+	pred_start = length(v)-5
+	# getalwaarde hier bepaald het aantal predictors plus één (werkt als tot en met)
+	predictors = []
+	indices = []
+	for j in pred_start:pred_end
+		ind = findall(x->x == j, v)
+		indices = push!(indices, ind)
+		predictors = push!(predictors,first.(par.coefs)[ind])
+	end
+end
+
+FOR-LOOP OMGEVORMD NAAR FUNCTIE
+function choosing_predictors(labels,v, n) # labels is vector met alle namen van de predictors, v is de vector met de indices van de gerankschikte parameters, n bepaalt het aantal predictors plus één (werkt als tot en met)
+	pred_end = length(v)
+	pred_start = length(v)-n
+	predictors = []
+	indices = []
+	for j in pred_start:pred_end
+		ind = findall(x->x == j, v)
+		indices = push!(indices, ind)
+		predictors = push!(predictors,labels[ind])
+	end
+	(indices, predictors)
+end
