@@ -1,1 +1,130 @@
 
+
+
+# running machines on data wherefor KAT5- and CBP-data are classified as 'merge'
+
+## creating a dataframe with labels 'merge' and eGFP
+
+df_reduced1 = df_training_stand
+for i = 1:5000
+	if df_reduced1.labels[i] == "CBP"
+		df_reduced1.labels[i] = "merge"
+	elseif df_reduced1.labels[i] == "KAT5"
+		df_reduced1.labels[i] = "merge"
+	end
+end
+
+## running a model with L1 regularization on this data
+
+mach = machine(LogisticClassifier(penalty = :l1, lambda = 1e-2),
+                        select(df_reduced1[1:4000,:], Not(:labels)),
+                        df_reduced1.labels[1:4000])|> fit!
+                        
+## extracting the parameters with the highest absolute values out of the model and creating the dataframe IMP_PREDd that contains only these predictors
+
+par = fitted_params(mach)
+v = sortperm(abs.(hcat(last.(par.coefs)...)[3,:]))
+w = sortperm(abs.(hcat(last.(par.coefs)...)[4,:]))
+
+pred_end = length(v)
+pred_start = length(v)-149 #value here determines the amount of parameters extracted
+predictorsv = []
+indicesv = []
+for j in pred_start:pred_end
+	ind = findall(x->x == j, v)
+	indicesv = push!(indicesv, ind)
+	predictorsv = push!(predictorsv,first.(par.coefs)[ind])
+end
+
+IMP_PRED = df_training_stand.labels
+for i in 1:150
+	IMP_PRED = hcat(IMP_PRED, df_training_stand[:, predictorsv[i]])
+end
+
+pred_endw = length(w)
+pred_startw = length(w)-149
+predictorsw = []
+indicesw = []
+for j in pred_startw:pred_endw
+	ind = findall(x->x == j, w)
+	indicesw = push!(indicesw, ind)
+	predictorsw = push!(predictorsw,first.(par.coefs)[ind])
+end
+
+IMP_PREDd = IMP_PRED
+for j in 1:149
+	if (any(x-> x == predictorsw[j],predictorsv))
+	else
+		IMP_PREDd = hcat(IMP_PREDd,df_training_stand[:,predictorsw[j]])
+	end
+end
+
+
+# running machines on data wherefor the eGFP-observations are deleted
+
+## creating a dataframe only with KAT5 and CBP (eGFP is deleted)
+
+I = []
+for i = 1:5000
+	if df_training_stand.labels[i] == "eGFP"
+		I = push!(I,i)
+	end
+end
+df_reduced = df_training_stand[Not(I), :]
+
+## running a model with L1 regularization on this data
+
+mach1 = machine(LogisticClassifier(penalty = :l1, lambda = 1e-2),
+                        select(df_reduced[1:3000,:], Not(:labels)),
+                        df_reduced.labels[1:3000])|> fit!
+                        
+## extracting the parameters with the highest absolute values out of the model and creating the dataframe IMP_PREDddd that contains only these predictors
+
+par1 = fitted_params(mach1)
+r = sortperm(abs.(hcat(last.(par1.coefs)...)[1,:]))
+s = sortperm(abs.(hcat(last.(par1.coefs)...)[2,:]))
+
+pred_endr = length(r)
+pred_startr = length(r)-149
+predictorsr = []
+indicesr = []
+for j in pred_startr:pred_endr
+	ind = findall(x->x == j, r)
+	indicesr = push!(indicesr, ind)
+	predictorsr = push!(predictorsr,first.(par1.coefs)[ind])	
+end
+predictorsvw=vcat(predictorsv,predictorsw)
+IMP_PREDddd = IMP_PREDdd
+for j in 1:150
+	if (any(x-> x == predictorss[j],predictorsvwr))
+	else
+		IMP_PREDddd = hcat(IMP_PREDddd,df_training_stand[:,predictorss[j]])
+	end
+end
+
+pred_ends = length(s)
+pred_starts = length(s)-149
+predictorss = []
+indicess = []
+for j in pred_starts:pred_ends
+	ind = findall(x->x == j, s)
+	indicess = push!(indicess, ind)
+	predictorss = push!(predictorss,first.(par1.coefs)[ind])
+end
+predictorsvwr=vcat(predictorsvw,predictorsr)
+IMP_PREDddd = IMP_PREDdd
+for j in 1:150
+	if (any(x-> x == predictorss[j],predictorsvwr))
+	else
+		IMP_PREDddd = hcat(IMP_PREDddd,df_training_stand[:,predictorss[j]])
+	end
+end
+
+
+# Running a model on this dataframe with the selection of parameters
+
+S = machine(LogisticClassifier(penalty = :none),
+                     select(IMP_PREDddd[1:4000,:], Not(:labels)),
+	                 df_training.labels[1:4000]) |> fit!
+losses(S,select(IMP_PREDddd[1:4000,:], Not(:labels)), IMP_PREDddd.labels[1:4000]) #checking for overfitting
+losses(SPANNEND,select(IMP_PREDddd[4000:5000,:], Not(:labels)), IMP_PREDddd.labels[4000:5000])
