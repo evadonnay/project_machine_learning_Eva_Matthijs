@@ -1,1 +1,77 @@
+PART 1: IN 2D
 
+FOR THIS CODE: 
+PCA_data is the dataset with 90 principal components
+PCA_twee is the dataset with 2 principal components
+
+
+#hierarchical clustering on PCA-data in 2D
+##dendogram
+clustersPCA = machine(HierarchicalClustering( linkage = :complete, metric = Euclidean()))
+predict(clustersPCA, PCA_data)
+plot(report(clustersPCA).dendrogram)
+clustersPCA_report = report(clustersPCA)
+
+##2D plot
+cutter = clustersPCA_report.cutter
+pred = cutter(h = 92)
+scatter(PCA_twee.x1, PCA_twee.x2,
+                 legend = false, c = Int.(int(pred)),
+                 title = "hierarchical clustering on PCA-data at height 92", 
+                 xlabel = "pc1", ylabel = "pc2")
+                 
+pred2 = cutter(h = 93)
+scatter(PCA_twee.x1, PCA_twee.x2,
+                 legend = false, c = Int.(int(pred2)),
+                 title = "hierarchical clustering on PCA-data at height 93", 
+                 xlabel = "pc1", ylabel = "pc2")                 
+
+#kmeans clustering in 2D with 3 clusters
+mach_cluster_twee = machine(KMeans(k = 3), PCA_twee) |> fit!
+prediction_twee = MLJ.predict(mach_cluster_twee, PCA_twee)
+scatter(PCA_twee.x1, PCA_twee.x2, group = prediction_twee, title = "k means clustering", xlabel = "pc1",
+                 ylabel = "pc2")
+                 
+#scattering the true values in 2D
+scatter(PCA_tweelabels[:,1],PCA_tweelabels[:,2], group = PCA_tweelabels[:,3], title = "true values", xlabel = "pc1", ylabel = "pc2")
+
+
+
+
+
+
+PART 2: IN MORE DIMENSIONS
+
+FOR THIS CODE:
+PCA_data is the dataset with 140 principal components
+
+
+#searching k for clustering on PCA-data
+maPCA = transpose(Matrix(PCA_data));
+TADAA = []
+for k in 2:50
+	R = kmeans(maPCA, k; maxiter = 200, display=:iter)
+	a = assignments(R)
+	c = counts(R)
+	M = R.centers
+	distances = pairwise(SqEuclidean(), maPCA)
+	tadaa = mean(silhouettes(a, c, distances))
+	TADAA = push!(TADAA,tadaa)
+end
+k = 2:50
+plot(k,TADAA, xlabel = "k-value", ylabel = "silhouette coefficient")
+
+#searching k for clusering on cleand and standardized data
+maDATA = transpose(Matrix(select(df_training_stand, Not(:labels))))
+TADAA2 = []
+for k in 2:50
+	R = kmeans(maDATA, k; maxiter = 200, display=:iter)
+	a = assignments(R)
+	c = counts(R)
+	M = R.centers
+	distances = pairwise(SqEuclidean(), maDATA)
+	tadaa = mean(silhouettes(a, c, distances))
+	TADAA2 = push!(TADAA2,tadaa)
+end
+k = 2:50
+plot(k,TADAA2, xlabel = "k-value", ylabel = "silhouette coefficient")
