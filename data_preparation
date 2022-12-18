@@ -20,7 +20,7 @@ plot(explained_variance, label = nothing, yscale = :log10,
 begin
 	H=[]
 	for i in 1:35
-		gene_fit_reg_auto_2 = machine(PCA(maxoutdim= 5*i) |> MultinomialClassifier(penalty = 																:none),
+		gene_fit_reg_auto_2 = machine(PCA(maxoutdim= 5*i) |> MultinomialClassifier(penalty = :none),
                     	select(df_training_stand[1:4000,:], Not(:labels)),
                         df_training_stand.labels[1:4000])|> fit!
 		s = [i,accuracy(predict_mode(gene_fit_reg_auto_2,select(df_training_stand[1:4000,:], Not(:labels))), df_training_stand.labels[1:4000]),
