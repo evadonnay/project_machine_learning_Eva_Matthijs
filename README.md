@@ -6,7 +6,8 @@ In our github repository you can find the different scripts for every part of th
 
 ## reproducibility 
 
-
+## Feature selection
+In this section we tried to extract the predictors with the highest predictive value, form a new dataset with these and run a machine on this newly created dataset. The parameters with the highest predictive value were found as the predictors wherefor the absolute value of the coefficients in a model with L1 regularization were the highest. 
 
 ## Clustering
 Finally, some cluster technologies were applied on the dataset. 
