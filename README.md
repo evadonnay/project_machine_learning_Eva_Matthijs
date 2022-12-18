@@ -1,12 +1,12 @@
-# project_machine_learning_Eva_Matthijs
+# Project_machine_learning_Eva_Matthijs
 machine learning project for microarray gene expression
 
-## organisation of the repository 
+## Organisation of the repository 
 In our github repository you can find the different scripts for every part of the project. We decided to split up into different parts to maintain a better structure and to have a better overview of all the code we have written for every part of the project. The report will contain a discussion of the results and observation we obtained from the code. Under this README file u will be able to find more comments and approaches for every part of the coding process. We also would like to point out that in the written two pages report u would be able to find some graphs and results we used for certain decisions we made in the coding process. We will refer to them in the coding files if necessary. 
 
-## reproducibility 
+## Reproducibility 
 
-## data cleaning
+## Data cleaning
 We started the process of data cleaning by looking at the raw data and checking for any missing values. There were no missing values in the dataset, so no samples had to be removed from the data. 
 
 The next important step we committed to was to remove genes that had a variance of 0. These genes didn’t come to expression in a single cell of the 5000 cells, so they won’t have any explanatory value in model training and the classification process. Deleting the unexpressed genes allowed us to reduce the dimension from 32000 predictors to... 
