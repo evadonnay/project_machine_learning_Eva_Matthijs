@@ -1,1 +1,48 @@
+# result from this graph discussed in Read me file 
 
+begin
+	mach = machine(PCA(), select(df_training_stand[1:4000,:], Not(:labels)))
+	fit!(mach)
+
+	explained_variance = report(mach).principalvars
+	explained_variance ./= sum(explained_variance)
+	cum_ev = cumsum(explained_variance)
+
+	plot(cum_ev, stackgroup=1, label = nothing, 
+        xlabel ="Number of components",
+        ylabel ="Cumulative explained variance")
+end 
+
+plot(explained_variance, label = nothing, yscale = :log10,
+              xlabel = "component", ylabel = "proportion of variance explained")
+              
+# graphs for second part:
+begin
+	H=[]
+	for i in 1:35
+		gene_fit_reg_auto_2 = machine(PCA(maxoutdim= 5*i) |> MultinomialClassifier(penalty = 																:none),
+                    	select(df_training_stand[1:4000,:], Not(:labels)),
+                        df_training_stand.labels[1:4000])|> fit!
+		s = [i,accuracy(predict_mode(gene_fit_reg_auto_2,select(df_training_stand[1:4000,:], Not(:labels))), df_training_stand.labels[1:4000]),
+		accuracy(predict_mode(gene_fit_reg_auto_2,select(df_training_stand[4001:5000,:], Not(:labels))), df_training_stand.labels[4001:5000])]
+		H=[H;s]
+	end
+end
+
+begin
+	S=[1.0 0.77225 0.766]
+	for i in 2:35
+		p = H[(i*3)-2:3*i]
+		o = p'
+		S= vcat(S,o)
+	end
+end
+
+PCA_table= DataFrame(S, :auto)
+rename!(PCA_table, :x1 => :amount_Of_PC, :x2 => :training_accuracy, :x3 => :Validation_accuracy)
+index = PCA_table.amount_Of_PC.*5
+y = PCA_table[:,2:3]
+PCA_table_final= hcat(index,y)
+rename!(PCA_table_final, :x1 => :amount_of_PC)
+plot(PCA_table_final.amount_of_PC,PCA_table_final.training_accuracy, xlabel="amount of PC's", ylabel= "training_accuracy", legend= false, title= "training accuracy")
+plot(PCA_table_final.amount_of_PC,PCA_table_final.Validation_accuracy, xlabel="amount of PC's", ylabel= "validation_accuracy", legend= false, title= "validation accuracy")
