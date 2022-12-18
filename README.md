@@ -20,14 +20,12 @@ Now after the data cleaning it’s still clear we’re working with a dataset wh
 In this section we tried to extract the predictors with the highest predictive value, form a new dataset with these and run a machine on this newly created dataset. The parameters with the highest predictive value were found as the predictors wherefor the absolute value of the coefficients in a model with L1 regularization were the highest. 
 
 ### Dimensional reduction using principal components 
-(Code for constructing these graphs in data_preparation file)
-Principal components allow us to reshape the original dataset (after data cleaning) to a set with a smaller number of predictors that collectively explain most of the variability in the original dataset. The next challenge we now had to deal with was finding the proper number of principal components to obtain the best model to work with.  The first step in the search for a good number of principal components was by plotting the number of principal components with cumulative explained variance and the proportion of variance explained by every component (results see figures below).
+Beginning of the code is to produce the graphes given below. The interpretation of these graphs is discussed in the report.
 
 ![Cumulative variance explained](https://user-images.githubusercontent.com/114157780/208315814-92bb1e0c-f80e-40aa-866d-1e4b9c3ef4a3.png)
 ![proportion of variance](https://user-images.githubusercontent.com/114157780/208315823-b3bb8272-7ebd-422b-a397-fd8668b6f5ec.png)
 
-After iterative fitting some classification machines we made the remarkable observation that 3000 principal components had the same validation accuracy as 140 principal components, meaning that at least 80 precent of the explained variance by 3000 principal components is unexplainable for the classification process. In this kind of dataset, it’s reasonable to find such a big amount of unexplainable variance because every cell is different and so is the amount of expression of the genes in every cell. As a matter of fact, we could notice that a lower number of principal components had a good validation accuracy on the validation set without overtraining on the training set (results figures below).
-As seen on the figures there is some sort of saturation of the validation accuracy when we grow the number of principal components. By taking a lower number of principal components we can simplify the machine, have a lower training accuracy and the same validation accuracy. For these reasons we decided to work in a range of 130 to 150 principal components in further data analysis.
+Second part of the code is used to produce the graphs given below. These results are also discussed in the report.
 
 ![training_accuracy](https://user-images.githubusercontent.com/114157780/208315896-ebb048f7-e9fc-49b1-8d4d-2d15887639e8.png)
 ![validation_accuracy](https://user-images.githubusercontent.com/114157780/208315910-c638ba87-4f70-4fc3-beab-6a049baeaa42.png)
