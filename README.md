@@ -9,7 +9,7 @@ In our github repository you can find the different scripts for every part of th
 ## Data cleaning
 We started the process of data cleaning by looking at the raw data and checking for any missing values. There were no missing values in the dataset, so no samples had to be removed from the data. 
 
-The next important step we committed to was to remove genes that had a variance of 0. These genes didn’t come to expression in a single cell of the 5000 cells, so they won’t have any explanatory value in model training and the classification process. Deleting the unexpressed genes allowed us to reduce the dimension from 32000 predictors to... 
+The next important step we committed to was to remove genes that had a variance of 0. These genes didn’t come to expression in a single cell of the 5000 cells, so they won’t have any explanatory value in model training and the classification process. Deleting the unexpressed genes allowed us to reduce the dimension from 32285 predictors to 26226 predictors. 
 
 Finally, we standardized the data with the built-in standardizing machine in Julia. Standardizing the data means that the original data is now transformed into a “new” dataset where for every predictor the mean is zero and the standard deviation is 1. This harmonization of the data now allows us to make more accurate machines for principal component analysis and regularization, because both of these approaches depend on data scaling.  
 
