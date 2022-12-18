@@ -1,4 +1,4 @@
-# offcourse the the location where the data is stored will have to be changed to the location of the data on ur computer (for the reproducibility)
+# offcourse the the location where the data is stored will have to be changed to the location of the data on ur computer for the reproducibility (line 3 of this code)
 #start code, loading the data:
 df_training = CSV.read("C:\\Users\\matth\\OneDrive\\Bureaublad\\train.csv.gz", DataFrame)
 
