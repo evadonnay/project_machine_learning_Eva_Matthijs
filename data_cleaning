@@ -7,12 +7,14 @@ any(ismissing(df_training))
 size(df_training)
 
 #removing constant predictors + standardizing the data:
-df_no_labels= select(df_training[1:5000,:], Not(:labels))
-df_clean_const_no_labels = df_no_labels[:, std.(eachcol(df_no_labels)) .!= 0]
-colum_labels= df_training.labels
-stand_gene_mach= fit!(machine(Standardizer(), df_clean_const_no_labels));
-df_training_stand_no_labels= MLJ.transform(stand_gene_mach,df_clean_const_no_labels)
-df_training_stand= hcat(df_training_stand_no_labels, colum_labels)
-rename!(df_training_stand,:x1 => :labels)
-coerce!(df_training_stand, :labels => Multiclass);
+begin
+  df_no_labels= select(df_training[1:5000,:], Not(:labels))
+  df_clean_const_no_labels = df_no_labels[:, std.(eachcol(df_no_labels)) .!= 0]
+  colum_labels= df_training.labels
+  stand_gene_mach= fit!(machine(Standardizer(), df_clean_const_no_labels));
+  df_training_stand_no_labels= MLJ.transform(stand_gene_mach,df_clean_const_no_labels)
+  df_training_stand= hcat(df_training_stand_no_labels, colum_labels)
+  rename!(df_training_stand,:x1 => :labels)
+  coerce!(df_training_stand, :labels => Multiclass);
+end 
 size(df_training_stand)
