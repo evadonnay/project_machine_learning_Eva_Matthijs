@@ -31,6 +31,9 @@ Second part of the code is used to produce the graphs given below. These results
 ![training_accuracy](https://user-images.githubusercontent.com/114157780/208315896-ebb048f7-e9fc-49b1-8d4d-2d15887639e8.png)
 ![validation_accuracy](https://user-images.githubusercontent.com/114157780/208315910-c638ba87-4f70-4fc3-beab-6a049baeaa42.png)
 
+## non linear model
+We have chosen to work with a neural network classifier for the prediction of the test set. We made this decision based on some trial and error with different methods like a tree classifier, random forest classifier and neural networks. We found the best classification accuracy for neural networks. We also noticed a better accuracy for one hidden layer, making the hyperparameter tuning process a bit easier. We worked with PC's for the neural network with output dimension 140. The reason we have chosen 140 dimensions is discussed in the report and can be derived from the graphs given above. 
+
 ## Clustering
 Finally, some cluster technologies were applied on the dataset. 
 The first step in the analysis was trying to visualize the data and clusters. To do this the data had to be reduced from over 32000 predictors to only two variables that could be plotted against each other. The first and second principal component were chosen as these two variables. Plots were made with label colors obtained by k-means clustering and hierarchical clustering on the PCA data with 90 components.
