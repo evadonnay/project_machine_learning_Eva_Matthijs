@@ -1,1 +1,77 @@
+# we have chosen to work with a neural network, beacuse of better classification accuracy 
+#part one is exactly the same as we did in folder data cleaning and data preparation 
+#part 1:
+df_training = CSV.read("C:\\Users\\matth\\OneDrive\\Bureaublad\\train.csv.gz", DataFrame)
 
+begin
+	df_no_labels= select(df_training[1:5000,:], Not(:labels))
+	df_clean_const_no_labels = df_no_labels[:, std.(eachcol(df_no_labels)) .!= 0]
+	colum_labels= df_training.labels
+	stand_gene_mach= fit!(machine(Standardizer(), df_clean_const_no_labels));
+	df_training_stand_no_labels= MLJ.transform(stand_gene_mach,df_clean_const_no_labels)
+	df_training_stand= hcat(df_training_stand_no_labels, colum_labels)
+	rename!(df_training_stand,:x1 => :labels)
+	coerce!(df_training_stand, :labels => Multiclass);
+end
+
+#part 2
+PCA_df_training= fit!(machine(@pipeline(Standardizer(), PCA(maxoutdim = 140)), df_clean_const_no_labels))
+PCA_data = MLJ.transform(PCA_df_training,df_clean_const_no_labels)
+PCA_training= hcat(PCA_data, colum_labels, makeunique= true) 
+rename!(PCA_training, :x1_1 => :labels)
+coerce!(PCA_training, :labels => Multiclass)
+
+begin
+	model4 = NeuralNetworkClassifier(builder = MLJFlux.Short( n_hidden = 37,
+																		dropout= 0.2,
+                                                     		σ = relu),
+                             optimiser = ADAM(),
+                             batch_size = 32,
+							epochs= 2000
+							)
+	tuned_model4 = TunedModel(model = model4,
+							  resampling = CV(nfolds = 5),
+	                          range = [range(model4,
+						                :(lambda),
+									    lower= 1e-3, upper= 1e-1, scale = :log10)],
+	                          measure = accuracy)
+	mach4 = fit!(machine(tuned_model4,
+	                     select(PCA_training[1:4000,:], Not(:labels)),
+		                 PCA_training.labels[1:4000]), verbosity = 0)
+end
+report(mach4)
+
+begin
+	model3 = NeuralNetworkClassifier(builder = MLJFlux.Short( dropout= 0.2,
+                                                     		σ = relu),
+                             optimiser = ADAM(),
+                             batch_size = 32,
+							epochs= 2000,
+							lambda= 0.0255775
+							)
+	tuned_model3 = TunedModel(model = model3,
+							  resampling = CV(nfolds = 5),
+	                          range = [range(model3,
+						                :(builder.n_hidden),
+									    lower= 3, upper= 42)],
+	                          measure = accuracy)
+	mach3 = fit!(machine(tuned_model3,
+	                     select(PCA_training[1:4000,:], Not(:labels)),
+		                 PCA_training.labels[1:4000]), verbosity = 0)
+end
+report(mach3)
+
+begin
+	machine_3 = machine(NeuralNetworkClassifier(builder =MLJFlux.Short(
+																							n_hidden = 11,
+																							dropout= .2,
+                                                     					σ = relu),
+                             optimiser = ADAM(),
+                             batch_size = 20,
+							 epochs = 2000,
+							lambda = 0.0255775),
+							 select(PCA_training[1:4000, :], Not(:labels)),
+                      		PCA_training.labels[1:4000])
+	fit!(machine_3)
+	mean(predict_mode(machine_3, select(PCA_training[4001:5000,:], Not(:labels))) .!= PCA_training.labels[4001:5000])
+end
