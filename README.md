@@ -5,7 +5,7 @@ machine learning project for microarray gene expression
 In our github repository you can find the different scripts for every part of the project. We decided to split up into different parts to maintain a better structure and to have a better overview of all the code we have written for every part of the project. The report will contain a discussion of the results and observation we obtained from the code. In this README file u can find some brief explinations of some of the steps we have taken.
 
 ## Reproducibility 
-In the map reproducibility u can find the envirnoment we worked with for all the coding. We have chosen to work with the MLCourse environment and we haven't downloaded any extra packages that were not included in the MLCourse environment. 
+In the map reproducibility u can find the envirnoment we worked with for all the coding. We have chosen to work with the MLCourse environment and we haven't downloaded any extra packages that were not included in the MLCourse environment. Also, we worked with standardization zo we have to use the same standardization values for training as for testing data. The formule we used for this is available in the folder data cleaning. 
 
 ## Data cleaning
 We started the process of data cleaning by looking at the raw data and checking for any missing values. There were no missing values in the dataset, so no samples had to be removed from the data. 
