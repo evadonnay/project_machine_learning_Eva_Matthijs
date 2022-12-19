@@ -2,5 +2,5 @@ using Pkg
 Pkg.activate(joinpath(Pkg.devdir(), "MLCourse"))
 begin
   using MLJ, MLJLinearModels, NearestNeighborModels, MLCourse, Random, Plots, LinearAlgebra, Statistics, MLJMultivariateStatsInterface, CSV, 
-  DataFrames, Flux, Distributions, StatsPlots, MLJFlux, OpenML, MLJDecisionTreeInterface
+  DataFrames, Flux, Distributions, StatsPlots, MLJFlux, OpenML, MLJDecisionTreeInterface, Clustering, MLJClusteringInterface, Distances
 end
