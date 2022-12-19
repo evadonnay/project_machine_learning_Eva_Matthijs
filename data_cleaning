@@ -2,11 +2,12 @@
 #start code, loading the data:
 df_training = CSV.read("C:\\Users\\matth\\OneDrive\\Bureaublad\\train.csv.gz", DataFrame)
 
-#cheching for missing values in the dataset
+#First approach with deleting columns with a variance of zero
+##cheching for missing values in the dataset
 any(ismissing(df_training))
 size(df_training)
 
-#removing constant predictors + standardizing the data:
+##removing constant predictors + standardizing the data:
 begin
   df_no_labels= select(df_training[1:5000,:], Not(:labels))
   df_clean_const_no_labels = df_no_labels[:, std.(eachcol(df_no_labels)) .!= 0]
@@ -18,3 +19,28 @@ begin
   coerce!(df_training_stand, :labels => Multiclass);
 end 
 size(df_training_stand)
+
+
+#Second approach that can be applied on the test set as well
+##Standardizing the training data
+begin
+  df_no_labels= select(df_training[1:5000,:], Not(:labels))
+  colum_labels= df_training.labels
+  matr_training = Matrix(df_no_labels)
+  train_std = StatsBase.fit(ZScoreTransform, matr_training , dims=1);
+  StatsBase.transform!(train_std,matr_training)
+  matr_training2 = ifelse.(isnan.(matr_training), 0, matr_training)
+  datafram_training = DataFrame(matr_training2, :auto)
+  df_training_stand= hcat(datafram_training, colum_labels, makeunique = true)
+  rename!(df_training_stand,:x1_1 => :labels)
+  coerce!(df_training_stand, :labels => Multiclass);
+end
+
+##Standardizing the test data
+begin
+  matr_test = Matrix(df_test)
+  StatsBase.transform!(train_std, matr_test)
+  matr_test2 = ifelse.(isnan.(matr_test), 0, matr_test)
+  df_test_stand = DataFrame(matr_test2, :auto)
+end
+
